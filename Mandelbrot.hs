@@ -21,14 +21,13 @@ main = do
 
 -- Print set on the console
 printSet :: Int -> [Bool] -> IO ()
-printSet _ [] = return ()
-printSet w ps = do
-    let (line,rest) = splitAt (w-1) ps
-        lineC       = map boolToChar line
-    putStrLn lineC
-    printSet w rest
+printSet w ps = mapM_ (putStrLn . map boolToChar) $ splitLines ps
   where boolToChar True  = '*'
         boolToChar False = ' '
+        splitLines [] = []
+        splitLines ps = 
+            let (line, rest) = splitAt (w-1) ps
+            in line : splitLines rest
 
 
 -- Return true, if the point (x,y) is in the set. Tests for iter iterations.
