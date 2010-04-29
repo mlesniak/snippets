@@ -31,11 +31,10 @@ printSet w ps = do
         boolToChar False = ' '
 
 
-
 -- Return true, if the point (x,y) is in the set. Tests for iter iterations.
 f :: Int -> (Double, Double) -> Bool
-f iter (x,y) =
-    let values = iterate f' ((0.0,0.0), (x,y))
-    in (absQuad . fst $ values !! iter) < 4
-  where f' ((x,y), (cx,cy)) = ((x*x-y*y+cx, 2*x*y+cy), (cx,cy))
-        absQuad (x,y)       = x*x+y*y
+f iter (cx,cy) = all (<4) $ take iter (map abs (iterate f' (0.0,0.0)))
+  where f' (x,y)  = (x*x-y*y+cx, 2*x*y+cy)
+        abs (x,y) = x*x+y*y
+
+
