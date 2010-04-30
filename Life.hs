@@ -1,11 +1,10 @@
 -- Game of Life in Haskell for an infinite area. Not the most efficient
 -- version, but conceptually very easy to understand.
 --
--- TODO
---   * create random boards.
 module Main where
 import Data.List
 import Control.Monad
+import System.Random
 
 
 type Position = (Integer, Integer)
@@ -16,6 +15,16 @@ type Board    = [Position] -- list of alive cells
 --   animate (-3,3) (3,-3) b1
 b1 = [(0,0), (1,0), (2,0)]
 
+
+-- Create a board, where cells in the specified area are randomly alive.
+-- randomBoard :: Position -> Position -> Int -> IO Board
+randomBoard (x1,y1) (x2,y2) num = do
+    gen <- getStdGen
+    return $ take num $ nub $ makePairs (randoms gen)
+  where makePairs (x:y:xs) = 
+            let x' = x `mod` (x2-x1+1) + x1
+                y' = y `mod` (y1-y2+1) + y2
+            in (x',y') : makePairs xs
 
 
 -- Animate the game by waiting on a keypress before showing the next
@@ -35,7 +44,7 @@ showBoard (x1,y1) (x2,y2) board = do
         forM_ [x1..x2] $ \x -> do
             if (x,y) `elem` board 
                 then putStr " * "
-                else putStr " . "
+                else putStr "   "
         putStrLn ""
 
 
