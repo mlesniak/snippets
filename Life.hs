@@ -1,18 +1,42 @@
--- Game of Life in Haskell. Not the most efficient version, but conceptually
--- very easy to understand.
+-- Game of Life in Haskell for an infinite area. Not the most efficient
+-- version, but conceptually very easy to understand.
 --
 -- TODO
---   * add some visualization for the console.
+--   * create random boards.
 module Main where
 import Data.List
+import Control.Monad
 
 
 type Position = (Integer, Integer)
 type Board    = [Position] -- list of alive cells
 
 
--- Simple board for experimentation which cycles.
+-- Simple board for experimentation which cycles. To try it out, type
+--   animate (-3,3) (3,-3) b1
 b1 = [(0,0), (1,0), (2,0)]
+
+
+
+-- Animate the game by waiting on a keypress before showing the next
+-- iteration.
+animate :: Position -> Position -> Board -> IO ()
+animate ul lr b = do
+    showBoard ul lr b
+    getLine
+    animate ul lr (step b)
+
+
+-- Show part of the (infinite) board. The coordinates determine the upper left
+-- and lower right corner.
+showBoard :: Position -> Position -> Board -> IO ()
+showBoard (x1,y1) (x2,y2) board = do
+    forM_ [y2..y1] $ \y -> do
+        forM_ [x1..x2] $ \x -> do
+            if (x,y) `elem` board 
+                then putStr " * "
+                else putStr " . "
+        putStrLn ""
 
 
 -- For each cell in the board and for each possible neighbour cell determine
